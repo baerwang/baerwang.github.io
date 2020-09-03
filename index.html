@@ -62,7 +62,7 @@
             /* 这里我们都没有设置图片的大小，所以用的是默认是的大小(补充：拉伸后是图片铺满整个屏幕？) */
             background: url("../images/ship.png") no-repeat;
             z-index: 2; /* 一般是在absolute覆盖absolute时，才用z-index */
-            animation: cc 50s linear infinite;
+            animation: cc 55s linear infinite;
             opacity: 0.6;
         }
 
@@ -73,7 +73,7 @@
             }
             100% { /* 动画的结束 */
                 /* 为什么设置时间那么长和结束位置那么远呢。因为这样可以让水平和竖直方向的动画落差更明显 */
-                background-position: 600% 0;
+                background-position: 400% 0;
             }
         }
 
@@ -83,7 +83,7 @@
             }
             100% {
                 /* 相同的时间，不同的结束位置，动画的速度会不一样，根据公式v=s/t */
-                background-position: 0 600%;
+                background-position: 0 400%;
             }
         }
     </style>
