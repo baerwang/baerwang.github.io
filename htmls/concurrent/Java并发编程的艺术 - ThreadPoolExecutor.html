@@ -439,18 +439,20 @@ markdown style .output_wrapper{font-size: 15px; color: rgb(62, 62, 62); line-hei
 <li><p><strong>keepAliveTime</strong>(线程活动保持时间)：线程池的工作线程空闲后，保持存活的时间。如果任务很多，并且每个任务执行的时间比较短，可以调大时间，提高线程的利用率。</p></li>
 <li><p><strong>unit</strong>( 线程活动保持时间的单位)：可选的单位有天、小时、分钟、毫秒、微妙、纳秒、千分之一微秒。</p></li>
 <li><p><strong>workQueue</strong>(任务队列)：用于保存等待执行任务的阻塞队列。</p>
-<p>阻塞队列有：</p></li>
-<li><p><strong>ArrayBlockingQueue</strong>：是一个基于数组结构的有界阻塞队列，此队列按FIFO(先进先出)原则对元素进行排序。</p></li>
-<li><p><strong>LinkedBlockingQueue</strong>：是一个基于链表结构的阻塞队列，此队列按FIFO排序元素，吞吐量通常要高于<strong>ArrayBlockingQueue</strong>：静态工厂方法<strong>Executors.newFixedThreadPool(nThreads)</strong>使用了这个队列。</p></li>
-<li><p><strong>SynchronousQueue</strong>：一个不存储元素的阻塞队列。每个插入操作必须等到另一个线程调用移除操作，否则插入操作一直处于阻塞状态，吞吐量通常要高于<strong>LinkedBlockingQueue</strong>，静态工厂方法<strong>Executors.newCachedThreadPool()</strong>使用了这个队列。</p></li>
-<li><p>PriorityBlockingQueue：一个具有优先级的无限阻塞队列。</p></li>
+<p>阻塞队列有：</p>
+<ul>
+<li><strong>ArrayBlockingQueue</strong>：是一个基于数组结构的有界阻塞队列，此队列按FIFO(先进先出)原则对元素进行排序。</li>
+<li><strong>LinkedBlockingQueue</strong>：是一个基于链表结构的阻塞队列，此队列按FIFO排序元素，吞吐量通常要高于<strong>ArrayBlockingQueue</strong>：静态工厂方法<strong>Executors.newFixedThreadPool(nThreads)</strong>使用了这个队列。</li>
+<li><strong>SynchronousQueue</strong>：一个不存储元素的阻塞队列。每个插入操作必须等到另一个线程调用移除操作，否则插入操作一直处于阻塞状态，吞吐量通常要高于<strong>LinkedBlockingQueue</strong>，静态工厂方法<strong>Executors.newCachedThreadPool()</strong>使用了这个队列。</li>
+<li><span>PriorityBlockingQueue：一个具有优先级的无限阻塞队列。</span></li></ul></li>
 <li><p><strong>threadFactory</strong>(创建线程的工厂)：用于设置创建线程的工厂，可以通过线程工厂给每个创建出来的线程设置更有意义的名字。</p></li>
 <li><p><strong>handler</strong>(饱和策略)：当队列和线程池都满了，说明线程池处于饱和状态，那么必须采取一种策略处理提交的新任务。这个策略默认情况下是<strong>AbortPolicy</strong>，表示无法处理新任务时抛出异常。</p>
-<p>饱和策略有：</p></li>
-<li><p><strong>AbortPolicy</strong>：直接抛出异常。</p></li>
-<li><p><strong>CallerRunsPolicy</strong>：只用调用者所在线程来运行任务。</p></li>
-<li><p><strong>DiscardOldestPolicy</strong>：丢弃队列里最近的一个任务，并执行当前任务。</p></li>
-<li><p><strong>DiscardPolicy</strong>：不处理，丢弃掉。</p></li>
+<p>饱和策略有：</p>
+<ul>
+<li><strong>AbortPolicy</strong>：直接抛出异常。</li>
+<li><strong>CallerRunsPolicy</strong>：只用调用者所在线程来运行任务。</li>
+<li><strong>DiscardOldestPolicy</strong>：丢弃队列里最近的一个任务，并执行当前任务。</li>
+<li><strong>DiscardPolicy</strong>：不处理，丢弃掉。</li></ul></li>
 </ol>
 <h3 id="h-9"><span>提交任务</span></h3>
 <p>可以使用两个方法向线程池提交任务，分别为execute()和submit()方法。</p>
