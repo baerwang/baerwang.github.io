@@ -2,10 +2,7 @@
 <html>
 <head>  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1,user-scalable=0">
-  <meta name="author" content="微信公众号：颜家大少">
-  <meta name="email" content="3056432@qq.com">
-  <meta name="description" content="一个Markdown在线转换工具，让Markdown内容，不需作任何调整就能同时在微信公众号、博客园、掘金、csdn等平台正确显示当前预览的效果">
-  <title>Md2All export document</title>  
+  <title>ThreadPoolExecutor</title>  
   <style type="text/css" id="markdown_preview_css"> 
  .output_wrapper pre code{font-family: Consolas, Inconsolata, Courier, monospace; display: block !important; white-space: pre !important; word-wrap: normal !important; word-break: normal !important;  overflow: auto !important;}  
 .output_wrapper a:hover { text-decoration: underline; color: rgb(0, 96, 100); }
@@ -410,14 +407,14 @@ markdown style .output_wrapper{font-size: 15px; color: rgb(62, 62, 62); line-hei
 <li><strong>提高线程的可管理性</strong>。线程是稀缺资源，如果无限制地创建，不仅会消耗系统资源，还会降低系统的稳定性，使用线程池可以进行统一分配，调优和监控。</li>
 </ol>
 <h3 id="h-6"><span>实现原理</span></h3>
-<p>​    </p><figure><img src="images/2020-12-28/线程池实现流程-2.png" alt="线程池实现流程" title="线程池实现流程"><figcaption>线程池实现流程</figcaption></figure>
+<p>​    </p><figure><img src="../images/2020-12-28/线程池实现流程-2.png" alt="线程池实现流程" title="线程池实现流程"><figcaption>线程池实现流程</figcaption></figure>
 <ol>
 <li><span>线程池判断核心线程池里的线程是否都执行任务。如果不是，则创建一个新的工作线程来执行任务。如果核心线程池里的线程都在执行任务，进入下个流程。</span></li>
 <li><span>线程池判断工作队列是否已经满。如果工作队列没有满，则将新提交的任务存储在这个工作队列中。如果工作队列满了，进入下个流程。</span></li>
 <li><span>线程池判断线程池的线程是否都处于工作状态。如果没有，创建一个新的工作线程来执行任务。如果满了，交给饱和策略来处理这个任务。</span></li>
 </ol>
 <h3 id="hexecute4"><span>执行execute方法分下面4种情况</span></h3>
-<figure><img src="images/2020-12-28/execute执行流程.png" alt="execute执行流程" title="execute执行流程"><figcaption>execute执行流程</figcaption></figure>
+<figure><img src="../images/2020-12-28/execute执行流程.png" alt="execute执行流程" title="execute执行流程"><figcaption>execute执行流程</figcaption></figure>
 <ol>
 <li><span>如果当前运行的线程少于corePoolSize，则创建新线程来执行任务(执行这步骤需要获取全局锁)。</span></li>
 <li><span>如果运行的线程等于或多余corePoolSize，则将任务假如BlockingQueue。</span></li>
@@ -428,7 +425,7 @@ markdown style .output_wrapper{font-size: 15px; color: rgb(62, 62, 62); line-hei
 <p><strong>源码分析(JDK1.7)</strong></p>
 <pre><code class="java language-java hljs"><span class="hljs-function"><span class="hljs-keyword">public</span>&nbsp;<span class="hljs-keyword">void</span>&nbsp;<span class="hljs-title">execute</span><span class="hljs-params">(Runnable&nbsp;command)</span>&nbsp;</span>{<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword">if</span>&nbsp;(command&nbsp;==&nbsp;<span class="hljs-keyword">null</span>)&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword">throw</span>&nbsp;<span class="hljs-keyword">new</span>&nbsp;NullPointerException();<br>&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment">//&nbsp;如果线程数小于基本线程数，则创建线程并执行当前任务</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword">if</span>&nbsp;(poolSize&nbsp;&gt;=&nbsp;corePoolSize&nbsp;||&nbsp;!addIfUnderCorePoolSize(command))&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment">//&nbsp;如线程数大于等于基本线程数或线程创建失败，则将当前任务放到工作队列种</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword">if</span>&nbsp;(runState&nbsp;!=&nbsp;RUNNING&nbsp;||&nbsp;poolSize&nbsp;==&nbsp;<span class="hljs-number">0</span>)&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ensureQueuedTaskHandled(command);<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment">//&nbsp;如果线程池不处于运行中或任务无法放入队列，并且当前线程数量小于最大允许的线程数量，</span><br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment">//&nbsp;则创建一个线程执行任务</span><br>&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;<span class="hljs-keyword">else</span>&nbsp;<span class="hljs-keyword">if</span>&nbsp;(!addIfUnderMaximumPoolSize(command))&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-comment">//&nbsp;抛出RejectedExecutionException异常</span><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reject(command);<br>&nbsp;&nbsp;&nbsp;&nbsp;}<br>}<br></code></pre>
 <p><strong>工作流程</strong>：线程池创建线程时，会将线程封装工作线程Worker，Worker在执行完任务后，还会循环获取工作队列的任务来执行。</p>
-<p>线程池中的线程执行任务分两种情况：<br></p><figure><img src="images/2020-12-28/执行任务示意图.png" alt="ThreadPoolExecutor执行任务示意图" title="ThreadPoolExecutor执行任务示意图"><figcaption>ThreadPoolExecutor执行任务示意图</figcaption></figure>
+<p>线程池中的线程执行任务分两种情况：<br></p><figure><img src="../images/2020-12-28/执行任务示意图.png" alt="ThreadPoolExecutor执行任务示意图" title="ThreadPoolExecutor执行任务示意图"><figcaption>ThreadPoolExecutor执行任务示意图</figcaption></figure>
 <ol>
 <li><span>在execute()方法中创建一个线程时，会让这个线程执行当前任务。</span></li>
 <li><span>这个线程执行完上图1的任务后，会反复从BlockingQueue获取任务来执行。</span></li>
@@ -488,7 +485,7 @@ markdown style .output_wrapper{font-size: 15px; color: rgb(62, 62, 62); line-hei
 <pre><code class="java language-java hljs">&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-function"><span class="hljs-keyword">public</span>&nbsp;<span class="hljs-keyword">static</span>&nbsp;ExecutorService&nbsp;<span class="hljs-title">newFixedThreadPool</span><span class="hljs-params">(<span class="hljs-keyword">int</span>&nbsp;nThreads)</span>&nbsp;</span>{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword">return</span>&nbsp;<span class="hljs-keyword">new</span>&nbsp;ThreadPoolExecutor(nThreads,&nbsp;nThreads,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-number">0L</span>,&nbsp;TimeUnit.MILLISECONDS,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword">new</span>&nbsp;LinkedBlockingQueue&lt;Runnable&gt;());<br>&nbsp;&nbsp;&nbsp;&nbsp;}<br></code></pre>
 <p>​    FixedThreadPool的corePoolSize和maximumPoolSize都被设置为创建FixedThreadPool时指定的参数nThreads。</p>
 <p>​    当线程池中的线程数大于corePoolSize时，keepAliveTime为多余的空闲线程等待新任务的最长时间，超过这个时间后多余的线程将被终止。这里把keepAliveTime设置为0L，意味着多余的空闲线程会被立即终止。</p>
-<figure><img src="images/2020-12-28/fixedthreadpool示意图.png" alt="FixedThreadPool示意图" title="FixedThreadPool示意图"><figcaption>FixedThreadPool示意图</figcaption></figure>
+<figure><img src="../images/2020-12-28/fixedthreadpool示意图.png" alt="FixedThreadPool示意图" title="FixedThreadPool示意图"><figcaption>FixedThreadPool示意图</figcaption></figure>
 <ol>
 <li><span>如果当前运行的线程数少于corePoolSize，则创建新线程来执行任务。</span></li>
 <li><span>在线程池完成预热之后(当前运行的线程数等于corePoolSize)，将任务假如LinkedBlockingQueue。</span></li>
@@ -515,12 +512,12 @@ markdown style .output_wrapper{font-size: 15px; color: rgb(62, 62, 62); line-hei
 <pre><code class="java language-java hljs">&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-function"><span class="hljs-keyword">public</span>&nbsp;<span class="hljs-keyword">static</span>&nbsp;ExecutorService&nbsp;<span class="hljs-title">newCachedThreadPool</span><span class="hljs-params">()</span>&nbsp;</span>{<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword">return</span>&nbsp;<span class="hljs-keyword">new</span>&nbsp;ThreadPoolExecutor(<span class="hljs-number">0</span>,&nbsp;Integer.MAX_VALUE,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-number">60L</span>,&nbsp;TimeUnit.SECONDS,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="hljs-keyword">new</span>&nbsp;SynchronousQueue&lt;Runnable&gt;());<br>&nbsp;&nbsp;&nbsp;&nbsp;}<br></code></pre>
 <p>​    CoachedThreadPool的corePoolSize被设置为0，即corePool为空；maximumPoolSize被设置为Integer.MAX_VALUE，即maximumPool是无界的。这里把keepAliveTime设置为60L，意味着CacheThreadPool中的空闲线程等待新任务的最长时间为60秒，空闲线程超过60秒后将会被终止。</p>
 <p>​    FixedThreadPool和SingleThreadExecutor使用无界队列LinkedBlockingQueue作为线程池的工作队列。CachedThreadPool使用没有容量的SynchronousQueue作为线程池的工作队列，但CacheThreadPool的maximumPool是无界的。这意味着，如果主线程提交任务的速度高于maximumPool中线程处理任务的速度时，CachedThreadPool会不断创建新线程。极端情况下，CachedThreadPool会因为创建过多线程而耗尽CPU和内存资源。</p>
-<figure><img src="/images/2020-12-28/cacheThreadPool示意图.png" alt="cacheThreadPool示意图" title="cacheThreadPool示意图"><figcaption>cacheThreadPool示意图</figcaption></figure>
+<figure><img src="../images/2020-12-28/cacheThreadPool示意图.png" alt="cacheThreadPool示意图" title="cacheThreadPool示意图"><figcaption>cacheThreadPool示意图</figcaption></figure>
 <ol>
 <li><span>首先执行SynchronousQueue.offer(Runnable task)。如果当前maximumPool中有空闲线程正在执行SynchronousQueue.poll(keepAliveTime,TimeUnit.NANOSECONDS)，那么主线程执行offer操作与空闲线程执行的poll操作配对成功，主线程把任务交给空闲线程执行，execute()方法执行完成；否则执行下面的步骤2。</span></li>
 <li><span>当初始maximumPool为空，或者maximumPool中当前没有空闲线程时，将没有线程执行SynchronousQueue.poll(keepAliveTime,TimeUnit.NANOSECONDS)。这种情况下，步骤1将失败。此时CachedThreadPool会创建一个新线程执行任务，execute()方法执行完成。</span></li>
 <li><span>在步骤2中新创建的线程将任务执行完后，会执行SynchronousQueue.poll(keepAliveTime,TimeUnit.NANOSECONDS)。这个poll操作会让空闲线程最多在SynchronousQueue中等待60秒。如果60秒钟内主线程提交了一个新任务(主线程执行步骤1)，那么空闲线程将执行主线程提交的新任务；否则，这个空闲线程将终止。由于空闲60秒的空闲线程会被终止，因此长时间保存空闲的CachedThreadPool不会使用任何资源。</span></li>
 </ol>
 <p>SynchronousQueue是一个没有容量的阻塞队列。每个插入操作必须等待另一个线程的对应移除操作。CachedThreadPool使用SynchronousQueue，把主线程提交的任务传递给空闲线程执行。CachedThreadPool中任务传递的示意图。</p>
-<figure><img src="images/2020-12-28/cacheThreadPool任务传递示意图.png" alt="cacheThreadPool任务传递示意图" title="cacheThreadPool任务传递示意图"><figcaption>cacheThreadPool任务传递示意图</figcaption></figure></div></div></body>
+<figure><img src="../images/2020-12-28/cacheThreadPool任务传递示意图.png" alt="cacheThreadPool任务传递示意图" title="cacheThreadPool任务传递示意图"><figcaption>cacheThreadPool任务传递示意图</figcaption></figure></div></div></body>
 </html>
